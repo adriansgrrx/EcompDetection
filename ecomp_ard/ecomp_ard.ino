@@ -14,22 +14,22 @@ void loop() {
     char command = Serial.read(); // Read the incoming serial command
 
     if (command == 'A') { // BJT detected
-      myServo.write(0);   // Bin 1: 0 degrees
+      myServo.write(180);   // Bin 1: 0 degrees
       Serial.println("BJT detected! Servo moved to Bin 1 (0 degrees).");
     } else if (command == 'B') { // LED detected
-      myServo.write(30);  // Bin 2: 30 degrees
+      myServo.write(150);  // Bin 2: 30 degrees
       Serial.println("LED detected! Servo moved to Bin 2 (30 degrees).");
     } else if (command == 'C') { // Capacitor detected
-      myServo.write(60);  // Bin 3: 60 degrees
+      myServo.write(120);  // Bin 3: 60 degrees
       Serial.println("Capacitor detected! Servo moved to Bin 3 (60 degrees).");
     } else if (command == 'D') { // Defective component detected
-      myServo.write(120);  // Bin 4: 90 degrees
+      myServo.write(60);  // Bin 4: 90 degrees
       Serial.println("Defective component detected! Servo moved to Bin 4 (90 degrees).");
     } else if (command == 'E') { // Resistor detected
       myServo.write(90); // Bin 5: 120 degrees
       Serial.println("Resistor detected! Servo moved to Bin 5 (120 degrees).");
     } else if (command == 'F') { // Unknown component detected
-      myServo.write(150); // Bin 6: 150 degrees
+      myServo.write(30); // Bin 6: 150 degrees
       Serial.println("Unknown component detected! Servo moved to Bin 6 (150 degrees).");
     } else {
       Serial.println("Invalid command received.");
