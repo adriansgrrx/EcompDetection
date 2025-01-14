@@ -7,18 +7,18 @@ import queue
 from collections import defaultdict
 
 # Initialize serial communication with Arduino
-arduino = serial.Serial('COM6', 9600, timeout=1)  # Replace 'COM6' with your Arduino's port
+arduino = serial.Serial('COM8', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
 time.sleep(2)  # Allow time for the connection to establish
 
 # Load the YOLOv8 model
-model = YOLO("best.pt")
+model = YOLO("YOLOv8s.pt")
 
 # Shared queue for FIFO
 component_queue = queue.Queue()
 
 # Cooldown dictionary to track the last detection time for each component type
 cooldown_tracker = defaultdict(lambda: 0)
-cooldown_period = 2  # Seconds to wait before adding the same component again
+cooldown_period = 0.5  # Seconds to wait before adding the same component again
 
 # Arduino communication thread
 def arduino_communication():
@@ -31,13 +31,16 @@ def arduino_communication():
             arduino.write(component.encode())  # Send command to Arduino
             
             # Wait for Arduino confirmation
-            while True:
+            response_timeout = time.time() + 2  # 2-second timeout
+            while time.time() < response_timeout:
                 if arduino.in_waiting > 0:
                     response = arduino.readline().decode().strip()
                     print(f"Arduino response: {response}")  # Debug: Print Arduino response
                     if response == "DONE":
                         print(f"Component {component} processed successfully.")
-                        break  # Move to the next component
+                        break
+            else:
+                print("Arduino response timeout. Moving to the next component.")
         else:
             print("Queue is empty. Waiting for new components...")  # Debug: Empty queue state
             time.sleep(0.5)  # Wait briefly if the queue is empty
