@@ -7,43 +7,42 @@ import queue
 from collections import defaultdict
 
 # Initialize serial communication with Arduino
-arduino = serial.Serial('COM8', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
+arduino = serial.Serial('COM6', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
 time.sleep(2)  # Allow time for the connection to establish
 
 # Load the YOLOv8 model
-model = YOLO("YOLOv8s.pt")
+model = YOLO("YOLOv8sv6.pt")
 
 # Shared queue for FIFO
 component_queue = queue.Queue()
 
 # Cooldown dictionary to track the last detection time for each component type
 cooldown_tracker = defaultdict(lambda: 0)
-cooldown_period = 0.5  # Seconds to wait before adding the same component again
+cooldown_period = 5  # Seconds to wait before adding the same component again
 
 # Arduino communication thread
 def arduino_communication():
     while True:
-        if not component_queue.empty():
-            print(f"Queue before processing: {list(component_queue.queue)}")  # Debug: Print queue contents
-            component = component_queue.get()  # Get the first component from the queue
-            print(f"Processing component: {component}")
-            
-            arduino.write(component.encode())  # Send command to Arduino
-            
-            # Wait for Arduino confirmation
-            response_timeout = time.time() + 2  # 2-second timeout
-            while time.time() < response_timeout:
-                if arduino.in_waiting > 0:
-                    response = arduino.readline().decode().strip()
-                    print(f"Arduino response: {response}")  # Debug: Print Arduino response
-                    if response == "DONE":
-                        print(f"Component {component} processed successfully.")
-                        break
-            else:
-                print("Arduino response timeout. Moving to the next component.")
-        else:
-            print("Queue is empty. Waiting for new components...")  # Debug: Empty queue state
-            time.sleep(0.5)  # Wait briefly if the queue is empty
+        try:
+            component = component_queue.get(timeout=1)  # Non-blocking get with timeout
+            if component:
+                print(f"Processing component: {component}")
+                arduino.write(component.encode())  # Send command to Arduino
+
+                # Wait for Arduino confirmation
+                response_timeout = time.time() + 2  # 2-second timeout
+                while time.time() < response_timeout:
+                    if arduino.in_waiting > 0:
+                        response = arduino.readline().decode().strip()
+                        print(f"Arduino response: {response}")
+                        if response == "DONE":
+                            print(f"Component {component} processed successfully.")
+                            break
+                else:
+                    print("Arduino response timeout. Moving to the next component.")
+        except queue.Empty:
+            print("Queue is empty. Waiting for new components...")
+            time.sleep(0.5)
 
 # Start Arduino communication thread
 arduino_thread = threading.Thread(target=arduino_communication, daemon=True)
@@ -51,12 +50,17 @@ arduino_thread.start()
 
 # Function to handle YOLO detection and video feed
 def start_detection():
+    start_time = time.time()  # Record the start time of camera initialization
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         print("Error: Could not open webcam.")
         return
 
+    camera_init_time = time.time() - start_time  # Calculate the initialization time
+    print(f"Camera initialized in {camera_init_time:.2f} seconds.")
+
+    prev_frame_time = 0  # Initialize for FPS calculation
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -65,6 +69,7 @@ def start_detection():
 
         # Run YOLO inference on the frame
         results = model(frame)
+        valid_detection = False  # Track if any valid detection occurred
 
         # Process detection results
         for detection in results[0].boxes:
@@ -72,6 +77,7 @@ def start_detection():
             confidence = detection.conf
 
             if confidence > 0.70:  # Process only high-confidence detections
+                valid_detection = True  # Mark as valid detection
                 current_time = time.time()
                 if current_time - cooldown_tracker[cls] > cooldown_period:
                     # Update the cooldown tracker for this component type
@@ -84,20 +90,36 @@ def start_detection():
                     elif cls == 1:
                         component_queue.put('B')  # LED
                         print("Status: LED detected!")
-                    elif cls == 2:
+                    elif cls == 3:
                         component_queue.put('C')  # Capacitor
                         print("Status: Capacitor detected!")
-                    elif cls == 3:
+                    elif cls in [2, 4, 6, 7, 9]:
                         component_queue.put('D')  # Defective component
                         print("Status: Defective component detected!")
-                    elif cls == 4:
+                    elif cls == 8:
                         component_queue.put('E')  # Resistor
                         print("Status: Resistor detected!")
                     else:
                         component_queue.put('F')  # Unknown
                         print("Status: Unknown component detected!")
 
-                    print(f"Queue after adding: {list(component_queue.queue)}")  # Debug: Print queue after addition
+                    print(f"Queue after adding: {list(component_queue.queue)}")
+
+        if not valid_detection:  # If no valid detection was made
+            current_time = time.time()
+            if current_time - cooldown_tracker['F'] > 10:
+                component_queue.put('F')  # Add 'Unknown' to the queue
+                cooldown_tracker['F'] = current_time
+                print("Status: No detection. Added to Unknown bin.")
+
+        # FPS calculation
+        current_frame_time = time.time()
+        fps = 1 / (current_frame_time - prev_frame_time) if prev_frame_time != 0 else 0
+        prev_frame_time = current_frame_time
+
+        # Display the FPS on the frame
+        fps_text = f"FPS: {fps:.2f}"
+        cv2.putText(frame, fps_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         # Display the annotated frame in a window
         annotated_frame = results[0].plot()
@@ -105,6 +127,8 @@ def start_detection():
 
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to quit the detection
             break
+
+        time.sleep(0.05)  # Adjust sleep time to balance performance
 
     cap.release()
     cv2.destroyAllWindows()
