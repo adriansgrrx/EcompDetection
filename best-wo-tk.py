@@ -7,7 +7,7 @@ import queue
 from collections import defaultdict
 
 # Initialize serial communication with Arduino
-arduino = serial.Serial('COM6', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
+arduino = serial.Serial('COM5', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
 time.sleep(2)  # Allow time for the connection to establish
 
 # Load the YOLOv8 model
@@ -18,7 +18,7 @@ component_queue = queue.Queue()
 
 # Cooldown dictionary to track the last detection time for each component type
 cooldown_tracker = defaultdict(lambda: 0)
-cooldown_period = 5  # Seconds to wait before adding the same component again
+cooldown_period = 2  # Seconds to wait before adding the same component again
 
 # Arduino communication thread
 def arduino_communication():
@@ -76,7 +76,7 @@ def start_detection():
             cls = int(detection.cls)
             confidence = detection.conf
 
-            if confidence > 0.70:  # Process only high-confidence detections
+            if confidence > 0.75:  # Process only high-confidence detections
                 valid_detection = True  # Mark as valid detection
                 current_time = time.time()
                 if current_time - cooldown_tracker[cls] > cooldown_period:
@@ -107,7 +107,7 @@ def start_detection():
 
         if not valid_detection:  # If no valid detection was made
             current_time = time.time()
-            if current_time - cooldown_tracker['F'] > 10:
+            if current_time - cooldown_tracker['F'] > 20:
                 component_queue.put('F')  # Add 'Unknown' to the queue
                 cooldown_tracker['F'] = current_time
                 print("Status: No detection. Added to Unknown bin.")
@@ -128,7 +128,7 @@ def start_detection():
         if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to quit the detection
             break
 
-        time.sleep(0.05)  # Adjust sleep time to balance performance
+        time.sleep(0.01)  # Adjust sleep time to balance performance
 
     cap.release()
     cv2.destroyAllWindows()

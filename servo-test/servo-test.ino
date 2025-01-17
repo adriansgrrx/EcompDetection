@@ -127,7 +127,7 @@ void loop() {
       myServo.write(180);   // Bin 1: 180 degrees
       Serial.println("BJT detected! Servo moved to Bin 1 (0 degrees).");
     } else if (command == 'B') { // LED detected
-      myServo.write(140);  // Bin 2: 140 degrees
+      myServo.write(143);  // Bin 2: 140 degrees
       Serial.println("LED detected! Servo moved to Bin 2 (30 degrees).");
     } else if (command == 'C') { // Capacitor detected
       myServo.write(105);  // Bin 3: 105 degrees
@@ -153,7 +153,6 @@ void loop() {
     // Send confirmation back
     Serial.println("DONE");
   }
-  
 
     // Control DC Motor
   // Step 1: Run motor for 500ms
