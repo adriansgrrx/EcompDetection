@@ -91,7 +91,7 @@ This project focuses on detecting various electronic components using a machine 
 - Deploying the YOLOv8 model on a Raspberry Pi 4 Model B (8GB RAM) without an accelerator like Google Coral TPU results in significantly low FPS (0.31 FPS), making it unsuitable for live capture deployment.  
 - In comparison, deploying the model on a laptop with an integrated GPU achieves a much higher FPS (20.78 FPS), ensuring smoother performance.
 
-![FPS Comparison](https://drive.google.com/file/d/1oC4vNBp3vY5fOwv3Aoy4c8Nm0U6EqxUc/view?usp=sharing)
+![FPS Comparison](https://drive.google.com/uc?id=1oC4vNBp3vY5fOwv3Aoy4c8Nm0U6EqxUc)
 
 > *Figure: FPS comparison between Raspberry Pi and Laptop with integrated GPU.*
 
