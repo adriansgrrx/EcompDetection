@@ -64,6 +64,11 @@ python inference.py
 python inference_ard.py
 ```
 
+**For viewing the whole project with GUI:**
+```bash
+python inference_ard.py
+```
+
 ## 🤖 Hardware Integration
 
 - **Camera:** USB webcam (mounted behind or above robotic arm)
