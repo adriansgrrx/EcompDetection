@@ -125,7 +125,7 @@ class ComponentDetectionGUI:
 
     def setup_stats_panel(self):
         # Create header for stats
-        ttk.Label(self.stats_frame, text="Detection Statistics", style='Header.TLabel').pack(pady=(10, 20))
+        ttk.Label(self.stats_frame, text="ECompDetect             ", style='Header.TLabel').pack(pady=(10, 20))
         
         # Create labels for each component type
         self.stat_labels = {}
@@ -455,11 +455,8 @@ class ComponentDetectionGUI:
                 cv2.rectangle(annotated_frame, (self.rect_x1, self.rect_y1), 
                               (self.rect_x2, self.rect_y2), (255, 0, 0), 2)
                 
-                # Display counts on frame
-                y_offset = 30
-                for i, (cls, count) in enumerate(self.counts.items()):
-                    cv2.putText(annotated_frame, f"{cls}: {count}", (10, y_offset + i * 25),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                # REMOVED: Detection counts on frame
+                # No longer displaying counts directly on the OpenCV frame
                 
                 # Calculate and display FPS
                 fps = 1.0 / (time.time() - tic)
