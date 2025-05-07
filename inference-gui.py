@@ -298,7 +298,7 @@ class ComponentDetectionGUI:
         # Load YOLO model
         try:
             self.log_message("Loading YOLO model...")
-            self.model = YOLO('ecomp-detect-yolov8n_edgetpu.tflite', task='detect')
+            self.model = YOLO('ecomp-detect-yolov8n-v1_edgetpu.tflite', task='detect')
             self.log_message("YOLO model loaded successfully")
         except Exception as e:
             self.log_message(f"Failed to load YOLO model: {str(e)}")
@@ -335,7 +335,7 @@ class ComponentDetectionGUI:
         self.update_thread = threading.Thread(target=self.update_loop, daemon=True)
         self.update_thread.start()
         
-        self.log_message("Detection Started")
+        self.log_message("Detection Starting...")
 
     def update_loop(self):
         """Update UI elements periodically"""
