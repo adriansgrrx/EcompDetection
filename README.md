@@ -93,4 +93,4 @@ This project is developed for academic purposes at Polytechnic University of the
 
 ---
 
-**Developed by Group402**
+**Developed by BSCpE - Group4202**
