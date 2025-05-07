@@ -66,7 +66,7 @@ python inference_ard.py
 
 **For viewing the whole project with GUI:**
 ```bash
-python inference_ard.py
+python inference-gui.py
 ```
 
 ## 🤖 Hardware Integration
