@@ -1,6 +1,0 @@
-# Ignore Python virtual environment
-USB-Coral/
-
-# Ignore specific large binaries
-*.so
-*.so.*
