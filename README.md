@@ -18,28 +18,20 @@ EcompDetection is a computer vision-based system designed to assist in the inspe
 ```
 EcompDetection/
 │
-├── ai models/                    # Contains AI model training files and data
 ├── ecomp_ard/                    # Arduino-related code and hardware interface
-├── py files/                     # Supporting Python scripts and modules
-├── servo-test/                   # Tests for robotic arm servos
-├── tflite new/                   # Updated TFLite models (EdgeTPU, INT8, etc.)
+├── models/                       # Model files and saved weights
+├── py files/                     # Supporting Python scripts and utilities
+├── servo-test/                   # Scripts for testing servo motor movements
+├── shelf/                        # Optional folder for placing electronics to be detected
+├── tflite new/                   # Updated TFLite models (EdgeTPU, etc.)
 │
-├── 240_ecomp_yolov8n.pt          # YOLOv8 PyTorch model
-├── 240_yolov8n_edgetpu.tflite    # Edge TPU-compiled TFLite model
-├── 240_yolov8n_int8.tflite       # INT8 quantized TFLite model
+├── ecomp-detect-yolov8n-v1_edgetpu.tflite  # EdgeTPU model (optimized)
+├── ecomp-detect-yolov8n-v1.tflite          # Base quantized TFLite model
 │
-├── convert.py                    # Model conversion utilities
-├── coral-ecomp-detect.py         # Inference using Coral Edge TPU
-├── detect.py                     # Standard inference script
-├── detect_copy.py                # Backup of detect.py
-├── ecomp-detect-yolov8n_edgetpu.tflite  # Another Edge TPU model variant
-│
-├── ecomp-gui.py                  # Full-screen GUI for real-time detection
-├── inference-gui.py              # Simplified GUI version
-├── inference.py                  # Base inference script
-├── inference_ard.py              # Inference script with Arduino communication
-├── sort.py                       # Logic for sorting detected components
-├── yolov8n.pt                    # Backup of base YOLOv8 model
+├── inference_ard.py              # Inference with Arduino serial communication
+├── inference-gui.py              # Fullscreen GUI application
+├── inference.py                  # Inference only (no GUI or serial)
+├── README.md                     # Project documentation
 ```
 
 ## 🖥️ Requirements
