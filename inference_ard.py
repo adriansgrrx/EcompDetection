@@ -12,7 +12,7 @@ from collections import defaultdict
 # -------------------------------------
 # Arduino Setup
 # -------------------------------------
-arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)  # Change COM port if needed
+arduino = serial.Serial('/dev/ttyACM0', 9600, timeout=1)  # Change COM port if needed
 time.sleep(2)  # Allow Arduino time to reset
 
 # Queue and cooldown management
@@ -63,12 +63,19 @@ if not cap.isOpened():
     print("Failed to open webcam.")
     exit()
 
-# Frame dimensions
-frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+# Set fixed frame dimensions
+frame_w = 440
+frame_h = 440
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_w)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_h)
+
+# Verify that the settings were applied
+actual_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+actual_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+print(f"Frame dimensions set to: Width = {actual_w}, Height = {actual_h}")
 
 # Define central rectangle area (centered box)
-rect_w, rect_h = 400, 480  # size of the trigger box
+rect_w, rect_h = 300, 400  # size of the trigger box
 rect_x1 = (frame_w - rect_w) // 2
 rect_y1 = (frame_h - rect_h) // 2
 rect_x2 = rect_x1 + rect_w
