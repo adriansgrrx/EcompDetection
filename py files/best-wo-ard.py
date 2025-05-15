@@ -3,7 +3,7 @@ import cv2
 import time
 
 # Load the YOLOv8 model
-model = YOLO("YOLOv8s.pt")
+model = YOLO("YOLOv8sv6.pt")
 
 # Open the webcam or video capture (0 = default webcam, you can change it to 1, 2, etc., for other cameras)
 cap = cv2.VideoCapture(0)

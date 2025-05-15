@@ -98,7 +98,7 @@ class ComponentDetectionGUI:
         self.arduino = None
         self.component_queue = queue.Queue()
         self.cooldown_tracker = defaultdict(lambda: 0)
-        self.cooldown_period = 5  # seconds
+        self.cooldown_period = 10  # seconds
         
         # Frame display variables
         self.frame_w = 440
@@ -118,7 +118,7 @@ class ComponentDetectionGUI:
         
         # Tracking parameters
         self.min_distance = 30
-        self.centroid_timeout = 5.0
+        self.centroid_timeout = 10.0
         
         # Update stats initially
         self.update_stats()
@@ -241,7 +241,7 @@ class ComponentDetectionGUI:
     def start_arduino_communication(self):
         """Start Arduino communication in a separate thread"""
         try:
-            self.arduino = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+            self.arduino = serial.Serial('/dev/ttyUSB0', 9600, timeout=1)
             time.sleep(2)  # Allow Arduino time to reset
             self.log_message("Arduino connection established")
             
@@ -298,7 +298,7 @@ class ComponentDetectionGUI:
         # Load YOLO model
         try:
             self.log_message("Loading YOLO model...")
-            self.model = YOLO('ecomp-detect-yolov8n-v1_edgetpu.tflite', task='detect')
+            self.model = YOLO('ecomp-detect-yolov8n_edgetpu.tflite', task='detect')
             self.log_message("YOLO model loaded successfully")
         except Exception as e:
             self.log_message(f"Failed to load YOLO model: {str(e)}")

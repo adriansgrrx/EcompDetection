@@ -56,7 +56,6 @@ void setup() {
 
 void loop() {
   handleServoCommand();
-  //handleMotor1Loop();      // L293D Shield Motor M1 logic
   handleExternalMotor();   // L298N motor logic (1.5s on, 2s off cycle)
 }
 
@@ -108,39 +107,16 @@ void handleServoCommand() {
   }
 }
 
-// --- M1 Motor: 1.5s on, 2s off cycle ---
-void handleMotor1Loop() {
-  unsigned long currentMillis = millis();
-  if (motorRunning && currentMillis - lastMotorToggleTime >= 1500) {
-    motor1.run(RELEASE);
-    motorRunning = false;
-    lastMotorToggleTime = currentMillis;
-  } else if (!motorRunning && currentMillis - lastMotorToggleTime >= 2000) {
-    motor1.run(FORWARD);
-    motorRunning = true;
-    lastMotorToggleTime = currentMillis;
-  }
-}
-
-// --- External dual motor driver logic with cycle (1.5s on, 2s off) ---
 void handleExternalMotor() {
-  unsigned long currentMillis = millis();
+  // Turn motor on
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, motorSpeed);  // Full speed
+  delay(1500);  // Stay on for 1.5 seconds
   
-  if (motorRunning && currentMillis - lastMotorToggleTime >= 750) {
-    // Turn motor off
-    analogWrite(ENA, 0);
-    motorRunning = false;
-    lastMotorToggleTime = currentMillis;
-  } else if (!motorRunning && currentMillis - lastMotorToggleTime >= 1500) {
-    // Turn motor on
-    // Set the direction first
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, LOW);
-    // Then set the speed
-    analogWrite(ENA, motorSpeed);  // Full speed
-    motorRunning = true;
-    lastMotorToggleTime = currentMillis;
-  }
+  // Turn motor off
+  analogWrite(ENA, 0);
+  delay(2000);  // Stay off for 2 seconds
 }
 
 // --- Flush serial input buffer ---

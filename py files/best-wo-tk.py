@@ -7,7 +7,7 @@ import queue
 from collections import defaultdict
 
 # Initialize serial communication with Arduino
-arduino = serial.Serial('COM5', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
+arduino = serial.Serial('COM3', 9600, timeout=1)  # Replace 'COM8' with your Arduino's port
 time.sleep(2)  # Allow time for the connection to establish
 
 # Load the YOLOv8 model
